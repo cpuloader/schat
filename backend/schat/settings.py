@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'anymail',
+    #'anymail',
     'authentication',
     'schat',
 )
@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'mymiddleware.activeuser_middleware.ActiveUserMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'schat.urls'
@@ -69,10 +69,12 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 365   # seconds, must be equal to user expir
 USER_ONLINE_TIMEOUT = 300
 USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
 
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake'
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379')
     }
 }
 
@@ -90,6 +92,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'schat.paginator.JustNumbersPagination',
     'PAGE_SIZE': 30
 }
 

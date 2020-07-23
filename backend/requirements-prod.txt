@@ -7,4 +7,4 @@ django-webpack-loader
 haikunator
 djangorestframework-jwt
 django-redis-cache
-anymail==1.2
+whitenoise==5.1.0
