@@ -1,0 +1,121 @@
+.mat-drawer-container {
+    background-color: #333;
+}
+
+.main-toolbar {
+    display: block;
+    width: 100%;
+    z-index: 10;
+}
+
+.main-grid-list {
+    background-color: transparent;
+}
+
+.no-users-yet {
+    margin-top: 30px;
+    text-align: center;
+    color: #aaa;
+}
+
+.home-load-spinner {
+     width: 20%;
+     margin: auto;
+     margin-top: 100px;
+}
+
+.tab-action-buttons {
+    display: block;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+.tab-photo {
+    width: 100%;
+    height: 100%;
+}
+
+.user-pic {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.selected-user {
+    box-shadow: 0px 0px 0px 8px #fff inset;
+}
+
+.user-online-indicator {
+    position: absolute;
+    display: block;
+    top: 27px;
+    left: 25px;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    //background: #32CD32;
+    //background: linear-gradient(to top, #1e7b1e, #84e184);
+    z-index: 2;
+}
+
+.card-msg-indicator  {
+    position: absolute;
+    display: block;
+    top: 23px;
+    right: 56px;
+    text-align: center;
+    z-index: 2;
+    color: white;
+
+    mat-icon {
+        font-size: 60px;
+    }
+}
+
+.notify-on-card  {
+    position: absolute;
+    display: block;
+    top: 31px;
+    right: 31px;
+    width: 40px;
+    height: 30px;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    z-index: 2;
+}
+
+.connection-status-indicator {
+    position: absolute;
+    bottom: 50px;
+    left: 55px;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    z-index: 2;
+
+    @media only screen and (max-device-width: 480px) {
+        bottom: 40px;
+    }
+}
+
+.set-room-key-card {
+    position: relative;
+}
+
+.set-room-key-card-error {
+    position: absolute;
+    display: block;
+    width: 70%;
+    left: 0px;
+    top: 60px;
+
+    @media only screen and (max-device-width: 480px) {
+        width: 60%;
+    }
+}

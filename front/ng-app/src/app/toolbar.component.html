@@ -1,0 +1,14 @@
+<mat-toolbar color="primary" class="mat-elevation-z7">
+    <span>Hi,&nbsp;</span>
+    <span>{{ loggedUser?.username }}!</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button [mat-menu-trigger-for]="menu" class="toolbar-settings-menu">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+</mat-toolbar>
+
+<mat-menu x-position="before" #menu="matMenu">
+    <button mat-menu-item (click)="search()">Search</button>
+    <button mat-menu-item (click)="userSettings()">Settings</button>
+    <button mat-menu-item (click)="logout()">Logout</button>
+</mat-menu>

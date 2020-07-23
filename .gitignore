@@ -1,0 +1,10 @@
+*.pyc
+__pycache__
+backend/**/migrations
+backend/db.sqlite3
+backend/run_env.bat
+backend/hostinfo.txt
+backend/media/
+backend/webpack-stats.json
+front/ng-app/node_modules/
+notes/

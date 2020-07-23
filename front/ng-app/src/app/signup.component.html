@@ -1,0 +1,34 @@
+<div class="signup">
+    <h1>SignUp</h1>
+    <mat-card class="form-card">
+        <form role="form" (ngSubmit)="signup()" #signupForm="ngForm">
+            <div *ngIf="error && error.error" class="hint-warning">{{ error.error }}</div>
+            <mat-form-field color="{{ error?.email ? 'warning' : 'primary' }}">
+                <input matInput type="email" name="email" placeholder="Email" [(ngModel)]="user.email" maxlength="40" required>
+                <mat-hint *ngIf="error && error.email" class="hint-warning">{{ error.email[0] }}</mat-hint>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-hint *ngIf="error && error.username" class="hint-warning">{{ error.username[0] }}</mat-hint>
+                <input matInput type="text" name="username" placeholder="Username" [(ngModel)]="user.username" maxlength="20" required>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-hint *ngIf="error && error.password" class="hint-warning">{{ error.password[0] }}</mat-hint>
+                <input matInput type="password" name="password" placeholder="Password" [(ngModel)]="user.password" required>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput type="password" name="confirm_password" placeholder="Confirm password" [(ngModel)]="user.confirm_password" required>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-hint *ngIf="error && error.tagline" class="hint-warning">{{ error.tagline[0] }}</mat-hint>
+                <input matInput type="text" name="tagline" placeholder="Status text" [(ngModel)]="user.tagline">
+            </mat-form-field>
+            <br>
+            <button mat-raised-button color="primary" [disabled]="!signupForm.form.valid || !(user.password === user.confirm_password)">Submit</button>
+            <a class="link-after-button" [routerLink]="['/login']">Click here to Login</a>
+        </form>
+    </mat-card>
+</div>

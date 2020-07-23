@@ -1,0 +1,30 @@
+.add-message-container {
+    box-shadow: 0 -3px 4px -4px #555;
+    padding-top: 5px;
+}
+
+.message-input-container {
+    width: 85%;
+}
+
+.add-message-form {
+    margin-left: 70px;
+    margin-right: 10px;
+}
+
+.send-button {
+    float: right;
+    min-width: 40px;
+    margin-top: 0.7em;
+}
+
+@media only screen and (max-device-width: 800px) {
+    .message-input-container {
+        width: 75%;
+    }
+
+    .send-button {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+}

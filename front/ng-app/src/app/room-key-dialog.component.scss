@@ -1,0 +1,12 @@
+.add-room-key-container {
+    width: 300px;
+
+    @media only screen and (max-device-width: 480px) {
+        width: auto;
+        min-width: 200px;
+    }
+}
+
+.add-room-key-description {
+    margin-bottom: 10px;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modern blog</title>
+  {% load staticfiles %}
+  <base href="/" />
+
+  <link type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" >
+  <link type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" >
+  <link type="text/css" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+  <link type="text/css" href="{% static 'bootstrap-material-design/dist/css/bootstrap-material-design.min.css' %}" rel="stylesheet" />
+  <link type="text/css" href="{% static 'bootstrap-material-design/dist/css/ripples.min.css' %}" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'main/styles.sf777777777e60e313ecfbbb54.css' %}">
+
+  <script type="text/javascript" src="{% static 'jquery/jquery-2.2.4.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'arrive/arrive.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap-material-design/dist/js/material.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap-material-design/dist/js/ripples.min.js' %}"></script>
+  <script>
+    $(function() {
+      $.material.init();
+    });
+  </script>
+
+</head>
+
+<body class="mat-app-background">
+<app-root></app-root>  
+</body>
+
+<script type="text/javascript" src="{% static 'main/polyfills-es5.00000000000000000000.js' %}" nomodule defer></script>
+<script type="text/javascript" src="{% static 'main/polyfills-es2015.d4444444444444c8236abbc.js' %}" type="module"></script>
+<script type="text/javascript" src="{% static 'main/runtime-es2015.d9c333333333333d3f20eb87e8ebc1.js' %}" type="module"></script>
+<script type="text/javascript" src="{% static 'main/main-es2015.12455555555555bf19bd8cc6.js' %}" type="module"></script>
+<script type="text/javascript" src="{% static 'main/runtime-es5.dsd666666666660eb87e8ebc1.js' %}" nomodule defer></script>
+<script type="text/javascript" src="{% static 'main/main-es5.12400000000000000ffgdfgd3453453bf19bd8cc6.js' %}" nomodule defer></script>
+</html>

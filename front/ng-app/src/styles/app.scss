@@ -1,0 +1,95 @@
+@import "./custom-theme.scss";
+@include secret-rooms-theme($theme);
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, sans-serif;
+}
+
+.app {
+    height: 100vh;
+    max-height: 100vh;
+    background-color: #333;
+}
+
+.mat-icon-20 {
+    font-size: 20px;
+}
+
+mat-card {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+mat-sidenav {
+    width: 40vw;
+}
+
+.mat-tab-body {
+    height: calc(100vh - 64px - 50px);   /* full - toolbar - tab labels */
+    max-height: 100vh;
+}
+
+@media only screen and (max-device-width: 800px) {
+    mat-sidenav {
+        width: 100vw;
+    }
+
+    .mat-tab-label {
+        height: 30px !important;
+    }
+
+    .mat-tab-body {
+        height: calc(100vh - 64px - 30px);
+        max-height: 100vh;
+    }
+}
+
+.mat-tab-body-content {
+    overflow-y: hidden !important;
+}
+
+.login, .signup, {
+    margin: auto;
+    width: 30%;
+
+    .form-card {
+        margin: auto;
+        width: 90%;
+    }
+
+    .link-after-button {
+        margin-left: 20px;
+    }
+}
+
+.login mat-form-field, .signup mat-form-field {
+    margin: auto;
+    width: 100%;
+}
+
+@media only screen and (max-device-width: 480px) {
+    .login, .signup {
+        margin-left: 2%;
+        margin-right: 2%;
+        width: 95%;
+    }
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.clear-both {
+    clear: both;
+}
+
+.hint-warning {
+    color: red;
+}

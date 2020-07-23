@@ -1,0 +1,95 @@
+<section class="app flex-container" fxLayout="column" fxLayoutAlign="start stretch">
+
+    <div class="main-toolbar">
+        <toolbar-on-top [loggedUser]="loggedUser"></toolbar-on-top>
+    </div>
+
+    <mat-progress-spinner *ngIf="homeLoaded !== 'homeloaded'" class="home-load-spinner"
+            mode="indeterminate" color="primary">
+    </mat-progress-spinner>
+
+    <p class="no-users-yet" *ngIf="homeLoaded === 'homeloaded' && !users.length" >No users yet</p>
+
+    <mat-sidenav-container fxFlex class="side-nav">
+        <!-- sidenav -->
+        <mat-sidenav position="end" [mode]="sidenavMode" #sidenav class="mat-elevation-z6">
+            <mat-tab-group (focusChange)="tabFocusChanged($event)">
+                <mat-tab label="About Me">
+                    <div class="tab-inside">
+                        <div class="flex-container" fxLayout="column" fxLayoutAlign="start stretch">
+                            <mat-card>
+                                <mat-card-title>Name</mat-card-title>
+                                <mat-card-content>
+                                    <p>{{ selectedUser?.username }}</p>
+                                </mat-card-content>
+                            </mat-card>
+                            <mat-card>
+                                <mat-card-title>About</mat-card-title>
+                                <mat-card-content>
+                                    <p>{{ selectedUser?.tagline }}</p>
+                                </mat-card-content>
+                            </mat-card>
+                            <mat-card>
+                                <mat-card-title>Secret Key</mat-card-title>
+                                <mat-card-content class="set-room-key-card">
+                                    <p>If secret key is not set, new messages will not be encrypted and you will not be able to read old encrypted messages.</p>
+                                    <div class="set-room-key-card-error warn-color">{{ keyStatus }}</div>
+                                    <button mat-raised-button class="float-right" type="button" color="primary" (click)="setNewSecretKey()">Set Key</button>
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+                    </div>
+                    <div class="tab-action-buttons">
+                        <button mat-mini-fab (click)="sidenav.close()" color="accent">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Messages">
+                    <chat-window [selectedUser]="selectedUser" [loggedUser]="loggedUser"
+                                 [tabChanged]="tabChanged" [newRoomKeySet]="newRoomKeySet">Loading...</chat-window>
+                    <div class="connection-status-indicator" [ngStyle]="{ 'background-color': connectionColor }"></div>
+
+                    <div class="tab-action-buttons">
+                        <button mat-mini-fab (click)="sidenav.close()" color="accent">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Photo">
+                    <div>
+                        <img src="{{ selectedUser?.avatarimage?.picture || defaultProfilePic }}" class="tab-photo"
+                             title="photo of the {{ selectedUser?.username }}" />
+                    </div>
+                    <div class="tab-action-buttons">
+                        <button mat-mini-fab (click)="sidenav.close()" color="accent">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-sidenav>
+
+        <!-- main content -->
+        <mat-grid-list [cols]="columns" rowHeight="250px" class="main-grid-list">
+            <mat-grid-tile *ngFor="let user of users">
+                <div class="user-pic" [style.background-image]="getImage(user)"
+                     [ngClass]="{'selected-user': (user.username == selectedUser?.username)}">
+                </div>
+                <div *ngIf="user.is_online" class="user-online-indicator online-indicator-color"></div>
+                <div *ngIf="user.newMessages && user.newMessages.length" class="card-msg-indicator">
+                    <mat-icon>chat_bubble_outline</mat-icon>
+                </div>
+                <div *ngIf="user.newMessages && user.newMessages.length" class="notify-on-card">{{ user.newMessages.length }}</div>
+                <mat-grid-tile-footer>
+                    <h3 mat-line>{{ user.username }}</h3>
+                    <span mat-line>{{ user.tagline }}</span>
+                    <button mat-icon-button (click)="showModelDetails(user)">
+                        <mat-icon>info</mat-icon>
+                    </button>
+                </mat-grid-tile-footer>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </mat-sidenav-container>
+
+</section>

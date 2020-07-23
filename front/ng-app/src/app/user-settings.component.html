@@ -1,0 +1,40 @@
+<div class="user-settings-container">
+    <div class="user-settings-avatar-container">
+        <img src="{{ user.avatarimage?.picture_for_profile || defaultProfilePic }}" class="user-settings-avatar" alt="avatar"/>
+        <input hidden="true" type="file" #fileInput (change)="updateAvatar($event)" accept="image/*">
+        <button mat-raised-button (click)="fileInput?.click()" class="file-input-button">
+            Change picture
+        </button>
+        <mat-progress-bar *ngIf="uploading" class="progress-bars"
+              mode="determinate" color="accent"
+              [value]="avaUploadProgress">
+        </mat-progress-bar>
+        <mat-progress-bar *ngIf="preparing" class="progress-bars"
+              mode="indeterminate" color="primary">
+        </mat-progress-bar>
+    </div>
+    <form role="form" (ngSubmit)="update()" #settingsForm="ngForm">
+        <div *ngIf="error && error.error" class="hint-warning">{{ error.error }}</div>
+        <mat-form-field>
+            <mat-hint *ngIf="error && error.username" class="hint-warning">{{ error.username[0] }}</mat-hint>
+            <input matInput type="text" name="username" placeholder="Username" [(ngModel)]="user.username" required maxlength="20">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <mat-hint *ngIf="error && error.password" class="hint-warning">{{ error.password[0] }}</mat-hint>
+            <input matInput type="password" name="password" placeholder="Password" [(ngModel)]="user.password">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input matInput type="password" name="confirm_password" placeholder="Confirm password" [(ngModel)]="user.confirm_password">
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <mat-hint *ngIf="error && error.tagline" class="hint-warning">{{ error.tagline[0] }}</mat-hint>
+            <input matInput type="text" name="tagline" placeholder="Status text" [(ngModel)]="user.tagline">
+        </mat-form-field>
+        <br>
+        <button mat-raised-button color="primary" [disabled]="!settingsForm.form.valid || !(user.password === user.confirm_password)">Submit</button>
+        <button mat-button mat-dialog-close color="primary" class="float-right">Close</button>
+    </form>
+</div>

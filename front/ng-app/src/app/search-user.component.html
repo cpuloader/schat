@@ -1,0 +1,21 @@
+<div class="search-user-container">
+    <form role="form" class="user-settings" (ngSubmit)="search()" #searchForm="ngForm">
+        <div *ngIf="error && error.error" class="hint-warning">{{ error.error }}</div>
+        <div class="search-input">
+            <mat-form-field>
+                <input matInput type="email" name="email" placeholder="Email" [(ngModel)]="email" required>
+            </mat-form-field>
+            <button mat-raised-button color="primary" class="search-button" [disabled]="!searchForm.form.valid"><mat-icon>search</mat-icon></button>
+        </div>
+    </form>
+    <div class="clear-both"></div>
+    <div *ngIf="found === 'found'">
+        <div class="found-username">Found: {{ user.username }}</div>
+        <div class="search-user-avatar" [style.background-image]="getImage()"></div>
+        <button mat-raised-button color="primary" class="float-left" (click)="openChatRoom()">Chat</button>
+    </div>
+    <div *ngIf="found === 'notfound'">
+        <p>No users with this email.</p>
+    </div>
+    <button mat-button mat-dialog-close color="primary" class="float-right">Close</button>
+</div>

@@ -1,0 +1,9 @@
+<div class="add-message-container">
+    <form role="form" (ngSubmit)="sendMessage()" #sendMsgForm="ngForm" class="add-message-form" autocomplete="off">
+        <mat-form-field class="message-input-container">
+            <input matInput #textInput (click)="notifyFocus()" name="message" [(ngModel)]="message" placeholder="Message" required>
+        </mat-form-field>
+        <button mat-raised-button #textInput type="submit" color="primary" [disabled]="!sendMsgForm.form.valid"
+                class="send-button"><mat-icon>send</mat-icon></button>
+    </form>
+</div>

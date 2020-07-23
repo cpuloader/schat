@@ -1,0 +1,21 @@
+<div class="login">
+    <h1>Login</h1>
+    <mat-card class="form-card">
+        <form role="form" (ngSubmit)="login()" #loginForm="ngForm">
+            <div *ngIf="error && error.error" class="hint-warning">{{ error.error }}</div>
+            <div *ngIf="error && error.non_field_errors" class="hint-warning">{{ error.non_field_errors[0]}}</div>
+            <mat-form-field>
+                <input matInput type="email" name="email" placeholder="Email" [(ngModel)]="user.email" required>
+                <mat-hint *ngIf="error && error.email" class="hint-warning">{{ error.email[0] }}</mat-hint>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input matInput type="password" name="password" placeholder="Password" [(ngModel)]="user.password" required>
+                <mat-hint *ngIf="error && error.password" class="hint-warning">{{ error.password[0] }}</mat-hint>
+            </mat-form-field>
+            <br>
+            <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid">Submit</button>
+            <a class="link-after-button" [routerLink]="['/signup']">Click here to Signup</a>
+        </form>
+    </mat-card>
+</div>

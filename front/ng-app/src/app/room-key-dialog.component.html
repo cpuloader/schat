@@ -1,0 +1,12 @@
+<div class="add-room-key-container">
+    <div class="add-room-key-description">Enter secret key for this chat. All new messages will be encrypted.</div>
+    <form role="form" (ngSubmit)="setRoomKey()" #setRoomKeyForm="ngForm" autocomplete="off">
+        <mat-form-field class="room-key-input-container">
+            <input matInput #textInput name="key" [(ngModel)]="roomKey" placeholder="Secret room key" required>
+        </mat-form-field>
+        <br/>
+        <button mat-raised-button #textInput type="submit" color="primary" [disabled]="!setRoomKeyForm.form.valid">Set</button>
+        <button mat-button mat-dialog-close #textInput type="submit" color="primary"
+              style="float:right;">Cancel</button>
+    </form>
+</div>

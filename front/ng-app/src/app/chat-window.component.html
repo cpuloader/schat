@@ -1,0 +1,43 @@
+<div class="messages-container" autoscrollWindow [redrawWindow]="redrawWindow">
+    <div class="flex-container messages" fxLayout="column" fxLayoutAlign="start stretch">
+        <span *ngIf="hasOlderMessages && chatLoaded">
+            <button mat-button (click)="loadMoreMessages()" type="button">Load older...</button>
+        </span>
+        <mat-spinner *ngIf="!chatLoaded" class="chat-window-spinner" color="primary"></mat-spinner>
+        <span *ngIf="chatLoaded && !messages.length">
+            <p class="no-messages">No messages yet</p>
+        </span>
+        <span *ngFor="let message of messages">
+            <div class="messages-container-inner">
+                <span *ngIf="message.author.username == loggedUser.username">
+                    <img src="{{ loggedUser.avatarimage?.picture_for_preview || defaultProfilePic_mini }}" class="message-avatar message-avatar-user">
+                </span>
+                <div class="message-card" [ngClass]="{'my-message': message.author.username == loggedUser.username, 'not-my-message': message.author.username != loggedUser.username}">
+                    <p class="message-content" *ngIf="!message['notdecoded']"
+                       [linkParser]="message.message" [detail]="true">{{ message.message }}</p>
+                    <p class="message-content warn-color" *ngIf="message['notdecoded']">secret content</p>
+                    <p class="chat-message-date">
+                        <span *ngIf="message.author.username == loggedUser.username && message.checked">
+                            <mat-icon class="message-status">done_all</mat-icon>
+                        </span>
+                        <span *ngIf="message.author.username == loggedUser.username && message.sent">
+                            <mat-icon class="message-status">done</mat-icon>
+                        </span>
+                        {{ message.timestamp | dateFieldPipe }}
+                    </p>
+                    <div class="chat-message-remove" *ngIf="message.author.username == loggedUser.username" (click)="removeMessage(message)">
+                        <mat-icon class="chat-message-remove-icon">close</mat-icon>
+                    </div>
+                </div>
+                <span *ngIf="message.author.username !== loggedUser.username">
+                    <img src="{{ message.author.avatarimage?.picture_for_preview || defaultProfilePic_mini }}" class="message-avatar message-avatar-not-user">
+                </span>
+            </div>
+        </span>
+    </div>
+</div>
+<add-message [loggedUser]="loggedUser"
+             (inputFocused)="checkUnreadMsgs($event)"
+             (messageCreated)="onMessageAdd($event)"
+             (setRoomKey)="onRoomKeySet($event)">
+</add-message>
