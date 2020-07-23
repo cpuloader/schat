@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 import os
 
 from dotenv import load_dotenv
-project_folder = os.path.expanduser('~/sites/schat')  # adjust as appropriate
+project_folder = os.path.expanduser('~/sites')  # adjust as appropriate
 load_dotenv(os.path.join(project_folder, '.env'))
 
 from django.core.wsgi import get_wsgi_application
