@@ -5,7 +5,9 @@ backend/run_env.bat
 backend/hostinfo.txt
 backend/media/
 backend/webpack-stats.json
-backend/*/migrations/*
-!backend/*/migrations/__init__.py
+backend/authentications/migrations/*
+!backend/authentications/migrations/__init__.py
+backend/schat/migrations/*
+!backend/schat/migrations/__init__.py
 front/ng-app/node_modules/
 notes/
