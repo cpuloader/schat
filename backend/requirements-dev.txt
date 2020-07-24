@@ -7,3 +7,4 @@ django-webpack-loader
 haikunator
 djangorestframework-jwt
 django-redis-cache
+python-dotenv
