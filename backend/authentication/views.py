@@ -51,7 +51,7 @@ class AccountViewSet(viewsets.ModelViewSet):
             return (permissions.IsAuthenticated(),)
 
         return (permissions.IsAuthenticated(), IsAccountOwner(),)
-    
+
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -84,7 +84,7 @@ class AccountViewSet(viewsets.ModelViewSet):
             queryset = Account.objects.all()
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
-   
+
 """
             return Response({
             'status': 'Secret',
@@ -117,46 +117,12 @@ class AvatarViewSet(viewsets.ModelViewSet):
 
 class CookieJSONWebTokenAPIView(APIView):
     permission_classes = ()
-    authentication_classes = ()
-    serializer_class = VerifyJSONWebTokenSerializer
+    authentication_classes = (JSONWebTokenAuthentication,)
 
-    def get_serializer_context(self):
-        return {
-            'request': self.request,
-            'view': self,
-        }
+    def get(self, request, *args, **kwargs):
+        if api_settings.JWT_AUTH_COOKIE:
+            cookie = request.COOKIES.get(api_settings.JWT_AUTH_COOKIE)
+            print('!!!! CookieJSONWebTokenAPIView called', cookie)
+            return Response({}, status=status.HTTP_200_OK)
 
-    def get_serializer_class(self):
-        assert self.serializer_class is not None, (
-            "'%s' should either include a `serializer_class` attribute, "
-            "or override the `get_serializer_class()` method."
-            % self.__class__.__name__)
-        return self.serializer_class
-
-    def get_serializer(self, *args, **kwargs):
-        """
-        Return the serializer instance that should be used for validating and
-        deserializing input, and for serializing output.
-        """
-        serializer_class = self.get_serializer_class()
-        kwargs['context'] = self.get_serializer_context()
-        return serializer_class(*args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            user = serializer.object.get('user') or request.user
-            token = serializer.object.get('token')
-            response_data = jwt_response_payload_handler(token, user, request)
-            response = Response(response_data)
-            if api_settings.JWT_AUTH_COOKIE:
-                expiration = (datetime.utcnow() +
-                              api_settings.JWT_EXPIRATION_DELTA)
-                response.set_cookie(api_settings.JWT_AUTH_COOKIE,
-                                    token,
-                                    expires=expiration,
-                                    httponly=True)
-            return response
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({}, status=status.HTTP_403_FORBIDDEN)

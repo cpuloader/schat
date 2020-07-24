@@ -99,6 +99,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=20),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+    'JWT_AUTH_COOKIE': 'Authorization',
 }
 
 TEMPLATES = [
@@ -176,4 +177,3 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAILPASS')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-
