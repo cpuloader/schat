@@ -8,3 +8,4 @@ haikunator
 djangorestframework-jwt
 django-redis-cache
 python-dotenv
+requests

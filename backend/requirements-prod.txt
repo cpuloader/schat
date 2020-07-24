@@ -7,3 +7,4 @@ djangorestframework-jwt
 django-redis-cache
 whitenoise==5.1.0
 python-dotenv
+requests

@@ -1,3 +1,4 @@
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -7,8 +8,10 @@ from .models import Message, Room
 
 PUB_ENDPOINT = 'http://localhost:80/pub/'
 
+"""
 @receiver(post_save, sender=Message)
 def new_message_handler(**kwargs):
+    print('signal!');
     message = kwargs['instance']
     room = message.room
     receivers = room.members.all()
@@ -23,3 +26,4 @@ def new_message_handler(**kwargs):
         print('signal to ', message.author.pk);
         s.post(PUB_ENDPOINT + receiver.pk, params={'id': message.author.pk},
                        json=json.dumps(message.as_dict()))
+"""
