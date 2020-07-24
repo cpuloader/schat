@@ -20,7 +20,6 @@ from authentication.serializers import AccountSerializer, AvatarImageSerializer
 from schat.auth_classes import CsrfExemptSessionAuthentication
 from mymiddleware.activeuser_middleware import get_user_jwt
 
-jwt_response_payload_handler = api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
 
 class AuthRegister(APIView):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
