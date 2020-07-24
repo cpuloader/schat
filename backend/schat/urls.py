@@ -40,5 +40,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
-if settings.DEBUG:
+if settings.DEBUGMEDIA:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
