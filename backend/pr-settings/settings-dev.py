@@ -162,3 +162,4 @@ WEBPACK_LOADER = {
 }
 
 USE_WEBSOCKET = True
+PUB_ENDPOINT = 'http://127.0.0.1:8000/pub'

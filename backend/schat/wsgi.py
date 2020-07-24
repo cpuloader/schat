@@ -15,6 +15,11 @@ from django.core.wsgi import get_wsgi_application
 project_folder = os.path.expanduser('~/sites/schat/backend')
 load_dotenv(os.path.join(project_folder, '.env'))
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "schat.settings")
+PROD = os.getenv('PRODUCTION')
+
+if PROD:
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pr-settings.settings-prod")
+else:
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pr-settings.settings-dev")
 
 application = get_wsgi_application()

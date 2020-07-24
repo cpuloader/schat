@@ -115,10 +115,9 @@ class AvatarViewSet(viewsets.ModelViewSet):
 
 class CookieJSONWebTokenAPIView(APIView):
     permission_classes = ()
-    authentication_classes = ()#JSONWebTokenAuthentication,)
+    authentication_classes = ()
 
     def get(self, request, *args, **kwargs):
-        #if settings.JWT_AUTH['JWT_AUTH_COOKIE']:
         cookie = request.COOKIES.get('Authorization')
         print('!!!! CookieJSONWebTokenAPIView called', cookie)
         if cookie:

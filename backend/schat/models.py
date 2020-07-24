@@ -9,8 +9,6 @@ from django.conf import settings
 from authentication.models import Account
 
 
-PUB_ENDPOINT = 'http://127.0.0.1:80/pub'
-
 class Room(models.Model):
     name = models.TextField()
     label = models.SlugField(unique=True)
