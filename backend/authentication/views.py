@@ -115,12 +115,13 @@ class AvatarViewSet(viewsets.ModelViewSet):
 
 class CookieJSONWebTokenAPIView(APIView):
     permission_classes = ()
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = ()#JSONWebTokenAuthentication,)
 
     def get(self, request, *args, **kwargs):
-        if settings.JWT_AUTH['JWT_AUTH_COOKIE']:
-            cookie = request.COOKIES.get(api_settings.JWT_AUTH_COOKIE)
-            print('!!!! CookieJSONWebTokenAPIView called', cookie)
+        #if settings.JWT_AUTH['JWT_AUTH_COOKIE']:
+        cookie = request.COOKIES.get('Authorization')
+        print('!!!! CookieJSONWebTokenAPIView called', cookie)
+        if cookie:
             return Response({}, status=status.HTTP_200_OK)
 
         return Response({}, status=status.HTTP_403_FORBIDDEN)
