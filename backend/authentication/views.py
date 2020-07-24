@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
-from rest_framework_jwt.settings import api_settings
 
 from django.conf import settings
 from authentication.models import Account, AvatarImage
@@ -120,7 +119,7 @@ class CookieJSONWebTokenAPIView(APIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def get(self, request, *args, **kwargs):
-        if api_settings.JWT_AUTH_COOKIE:
+        if settings.JWT_AUTH['JWT_AUTH_COOKIE']:
             cookie = request.COOKIES.get(api_settings.JWT_AUTH_COOKIE)
             print('!!!! CookieJSONWebTokenAPIView called', cookie)
             return Response({}, status=status.HTTP_200_OK)
