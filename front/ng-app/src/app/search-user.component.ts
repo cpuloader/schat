@@ -25,7 +25,7 @@ export class SearchUserComponent {
     }
 
     getImage(): string {
-        if (this.user.avatarimage.picture_for_profile) {
+        if (this.user.avatarimage) {
             return `url(${this.user.avatarimage.picture_for_profile})`
         }
         return `url(${this.defaultProfilePic})`;

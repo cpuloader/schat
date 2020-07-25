@@ -21,4 +21,11 @@ export class CookieTools {
       if (!cookie) return true;
       else return false;
     }
+
+    setAuthorization(token: string) {
+      console.log('token ', token);
+      let expireDate = new Date();
+      expireDate.setHours(expireDate.getHours() + 1);  // set cookies for 1 hour - test
+      this.cookieService.set('Authorization', `Bearer ${token}`, expireDate);
+    }
 }

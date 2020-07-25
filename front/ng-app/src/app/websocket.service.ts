@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observer, Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { User, Room, Message } from './json-objects';
 import { ConfigService } from './config';
 import { WindowRef } from './window';
 import { parseMessage } from './parsers';
+import { CookieTools } from './cookie-tools.service';
 
 @Injectable()
 export class WebSocketService {
@@ -17,7 +19,9 @@ export class WebSocketService {
     private shouldReconnect: boolean = true;
     private reconnectAttempts: number = 0;
 
-    constructor(private windowRef: WindowRef, private config: ConfigService) {
+    constructor(private windowRef: WindowRef,
+                private config: ConfigService,
+                private cookieTools: CookieTools) {
         this.chatUrl = this.config.getChatUrl();
     }
 
@@ -55,26 +59,37 @@ export class WebSocketService {
         if (this.ws) {
             this.ws.close();
         }
-        this.subject = this.create(this.url);
-        if (this.checkLoop) clearInterval(this.checkLoop);
-        this.startCheckLoop();
+        const token = localStorage.getItem('id_token');
+        if (!token) {
+            this.shouldReconnect = false;
+            return;
+        }
+        this.cookieTools.setAuthorization(token);
+        this.subject = this.create(this.url, token);
+        //if (this.checkLoop) clearInterval(this.checkLoop);
+        //this.startCheckLoop();
         return this.subject;
     }
 
-    private create(url: string): Subject<MessageEvent> {
+    private create(url: string, token: string): Subject<MessageEvent> {
         this.ws = new WebSocket(this.url);
         this.ws.onopen = () => {
             console.log('socket ok');
             this._socketState$.next('connect');  // signal to subscribe in component
             this.reconnectAttempts = 0;
-        }
+        };
+        this.ws.onerror   = () => {
+            console.log('error: ws status', this.ws.readyState);
+            setTimeout(() => this.check(), 5000);
+        };
         let observable = Observable.create(
             (obs: Observer<MessageEvent>) => {
                 this.ws.onmessage = obs.next.bind(obs);
-                this.ws.onerror   = obs.error.bind(obs);
+                //this.ws.onerror   = obs.error.bind(obs);
                 this.ws.onclose   = () => {
                     obs.complete.bind(obs);
-                    this.check();
+                    console.log('ws close', this.ws.readyState);
+                    //setTimeout(() => this.check(), 5000);
                 }
                 return; //this.close(true);
         });
@@ -89,6 +104,7 @@ export class WebSocketService {
     }
 
     private check() {
+        if (this.ws) console.log('ws readyState', this.ws.readyState);
         if (!this.ws || this.ws.readyState == 3 && this.url && this.shouldReconnect) {
             this._socketState$.next('disconnect');  // signal to unsubscribe in component
             this.openRoom(this.roomName);

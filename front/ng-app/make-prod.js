@@ -1,22 +1,23 @@
 const fs = require('fs');
 var glob = require('glob');
 
-const prodJsPath = './final-prod/js/';
-const prodHtmlPath = './final-prod/html/';
-const prodCssPath = './final-prod/css/';
+const prodJsPath = '../../backend/static/main/';//'./final-prod/js/';
+const prodCssPath = '../../backend/static/css/';//'./final-prod/css/';
+const prodHtmlPath = '../../backend/templates/'; //'./final-prod/html/';
+
 const distPath = './dist/ng-app/';
 
 
 console.log('Deleting old files...');
-var oldJsFiles = glob.sync('./final-prod/js/*.*');
+var oldJsFiles = glob.sync(prodJsPath + '*.*');
 for (let file of oldJsFiles) {
   fs.unlinkSync(file);
 }
-var oldHtmlFiles = glob.sync('./final-prod/html/*.*');
+var oldHtmlFiles = glob.sync(prodHtmlPath + '*.*');
 for (let file of oldHtmlFiles) {
   fs.unlinkSync(file);
 }
-var oldCssFiles = glob.sync('./final-prod/css/*.*');
+var oldCssFiles = glob.sync(prodCssPath + '*.*');
 for (let file of oldCssFiles) {
   fs.unlinkSync(file);
 }

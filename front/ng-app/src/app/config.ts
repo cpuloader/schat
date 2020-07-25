@@ -16,9 +16,9 @@ export class ConfigService {
     media: string = "/media";
     debug: boolean = DEBUG;
     host: string = '127.0.0.1:8000';
-    defaultProfilePicture: string = this.media + '/def_avatar_pics/default_ava.jpg';
-    defaultProfilePicture_prof: string = this.media + '/def_avatar_pics/profile/default_ava_profile.jpg';
-    defaultProfilePicture_mini: string = this.media + '/def_avatar_pics/preview/default_ava_preview.jpg';
+    defaultProfilePicture: string = this.static + '/def_avatar_pics/default_ava.jpg';
+    defaultProfilePicture_prof: string = this.static + '/def_avatar_pics/profile/default_ava_profile.jpg';
+    defaultProfilePicture_mini: string = this.static + '/def_avatar_pics/preview/default_ava_preview.jpg';
 
     // pagination, must be equal in backend
     pageSize: number = 30;
