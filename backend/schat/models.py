@@ -59,9 +59,9 @@ def send_to_receivers(message, created):
         for receiver in receivers:
             if receiver.pk != message.author.pk:
                 url = "{0}/{1}".format(settings.PUB_ENDPOINT, receiver.pk)
-                #print('created - signal to ', receiver.pk, url);
+                print('created - pub to', receiver.pk, url);
                 s.post(url, json=json.dumps(message.as_dict()))
     if not created:
         url = "{0}/{1}".format(settings.PUB_ENDPOINT, receiver.pk)
-        #print('signal to ', message.author.pk, url);
+        print('pub to', message.author.pk, url);
         s.post(url, json=json.dumps(message.as_dict()))
