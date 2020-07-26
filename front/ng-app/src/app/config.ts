@@ -15,7 +15,7 @@ export class ConfigService {
     static: string = "/static";
     media: string = "/media";
     debug: boolean = DEBUG;
-    host: string = '127.0.0.1:8000';
+    //host: string = '127.0.0.1:8000';
     defaultProfilePicture: string = this.static + '/def_avatar_pics/default_ava.jpg';
     defaultProfilePicture_prof: string = this.static + '/def_avatar_pics/profile/default_ava_profile.jpg';
     defaultProfilePicture_mini: string = this.static + '/def_avatar_pics/preview/default_ava_preview.jpg';
@@ -28,7 +28,7 @@ export class ConfigService {
     vapid_public: string = "BB9jpW7WZEW0hQMAiD_FD7YCD79DOzDt9R9cHHYyzh_KsHGe6GlwqxejN345wZPTaiLZzdyYKHCrzSaIPCCEET4";
 
     public getHost(): string {
-        return this.debug ? this.host : this.windowRef.nativeWindow.location.host;
+        return this.windowRef.nativeWindow.location.host;
     }
 
     public getWSScheme(): string {

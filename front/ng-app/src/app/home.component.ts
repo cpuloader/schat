@@ -107,7 +107,7 @@ export class HomeComponent {
                 },
                 err => {
                     this.connectionColor = 'OrangeRed';
-                    console.log('connection lost');
+                    console.log('connection lost', err);
                 }
             );
     }
@@ -150,11 +150,14 @@ export class HomeComponent {
         this.webSocketStateSub = this.webSocketService.socketState$.subscribe(
             res => {
                 if (res === 'connect') {
-                    this.subscribeToIncomingMessages(); // subscribe to messages
+                    if (!this.msgSubscription) {
+                      this.subscribeToIncomingMessages(); // subscribe to messages
+                    }
                     this.connectionColor = 'Orange';
                 } else if (res === 'disconnect' && this.msgSubscription) {
                     this.connectionColor = 'OrangeRed';
-                    this.msgSubscription.unsubscribe();  // unsubscribe from messages
+                    //this.msgSubscription.unsubscribe();  // unsubscribe from messages
+                    //this.msgSubscription = null;
                 }
             });
         this.flagsSubscription = this.usersService.flagsUpdate$.subscribe(

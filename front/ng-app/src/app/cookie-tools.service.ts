@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { ConfigService } from './config';
 
 @Injectable()
 export class CookieTools {
-    constructor(private cookieService: CookieService) {}
+    constructor(private cookieService: CookieService, private config: ConfigService) {}
 
     setWindowCookie() {
       this.deleteWindowCookie();
@@ -23,9 +24,9 @@ export class CookieTools {
     }
 
     setAuthorization(token: string) {
-      console.log('token ', token);
       let expireDate = new Date();
       expireDate.setHours(expireDate.getHours() + 1);  // set cookies for 1 hour - test
-      this.cookieService.set('Authorization', `Bearer ${token}`, expireDate);
+      this.cookieService.set('Authorization', `Bearer ${token}`, expireDate);//, '/',
+                             //this.config.getHost(), false, 'Lax');
     }
 }

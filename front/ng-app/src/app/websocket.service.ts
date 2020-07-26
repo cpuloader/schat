@@ -39,7 +39,7 @@ export class WebSocketService {
         this.messages = null;
         this.messages = <Subject<Message>>this.connect(this.url).pipe(
                 map((response: MessageEvent): Message => {
-                    //console.log(JSON.parse(response.data));
+                    console.log('incoming msg', response.data);
                     return parseMessage(JSON.parse(response.data));
                 })
             );
@@ -66,8 +66,6 @@ export class WebSocketService {
         }
         this.cookieTools.setAuthorization(token);
         this.subject = this.create(this.url, token);
-        //if (this.checkLoop) clearInterval(this.checkLoop);
-        //this.startCheckLoop();
         return this.subject;
     }
 
@@ -78,9 +76,9 @@ export class WebSocketService {
             this._socketState$.next('connect');  // signal to subscribe in component
             this.reconnectAttempts = 0;
         };
-        this.ws.onerror   = () => {
-            console.log('error: ws status', this.ws.readyState);
-            setTimeout(() => this.check(), 5000);
+        this.ws.onerror   = (err) => {
+            console.log('error: ws status', this.ws.readyState, err);
+            setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts));
         };
         let observable = Observable.create(
             (obs: Observer<MessageEvent>) => {
@@ -89,9 +87,8 @@ export class WebSocketService {
                 this.ws.onclose   = () => {
                     obs.complete.bind(obs);
                     console.log('ws close', this.ws.readyState);
-                    //setTimeout(() => this.check(), 5000);
                 }
-                return; //this.close(true);
+                return;
         });
         let observer = {
             next: (data: Object) => {
@@ -104,15 +101,12 @@ export class WebSocketService {
     }
 
     private check() {
-        if (this.ws) console.log('ws readyState', this.ws.readyState);
+        //if (this.ws) console.log('ws readyState', this.ws.readyState);
         if (!this.ws || this.ws.readyState == 3 && this.url && this.shouldReconnect) {
             this._socketState$.next('disconnect');  // signal to unsubscribe in component
+            this.reconnectAttempts++;
             this.openRoom(this.roomName);
         }
-    }
-
-    private startCheckLoop() {
-        this.checkLoop = setInterval(() => this.check(), 5000);
     }
 
     // not used yet
