@@ -81,16 +81,14 @@ class AccountViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
         else:
-            queryset = Account.objects.all()
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-
-"""
+            #queryset = Account.objects.all()
+            #serializer = self.get_serializer(queryset, many=True)
+            #return Response(serializer.data)
             return Response({
-            'status': 'Secret',
-            'detail': 'Nobody can get all users.'
+                'status': 'Secret',
+                'detail': 'Nobody can get all users.'
             }, status=status.HTTP_403_FORBIDDEN)
-"""
+
 
 class AvatarViewSet(viewsets.ModelViewSet):
     queryset = AvatarImage.objects.all()
@@ -122,10 +120,8 @@ class CookieJSONWebTokenAPIView(APIView):
     def get(self, request, *args, **kwargs):
         cookie = request.COOKIES.get('Authorization')
         #print('!!!! CookieJSONWebTokenAPIView called', cookie)
-        if cookie:
-            splitted = urllib.parse.unquote(cookie).split()
-            if len(splitted) == 2 and authenticate_token(splitted[1]):
-                return Response({}, status=status.HTTP_200_OK)
+        if authenticate_token(cookie):
+            return Response({}, status=status.HTTP_200_OK)
 
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
@@ -134,11 +130,9 @@ def authenticate_token(token):
     try:
         decoded = jwt_decode_handler(token)
     except jwt.ExpiredSignature:
-        msg = _('Signature has expired.')
-        raise exceptions.AuthenticationFailed(msg)
+        raise exceptions.AuthenticationFailed('Signature has expired.')
     except jwt.DecodeError:
-        msg = _('Error decoding signature.')
-        raise exceptions.AuthenticationFailed(msg)
+        raise exceptions.AuthenticationFailed('Error decoding signature.')
     except jwt.InvalidTokenError:
         raise exceptions.AuthenticationFailed()
     #print('decoded', decoded)
@@ -151,15 +145,12 @@ def authenticate_token_credentials(username):
     User = get_user_model()
 
     if not username:
-        msg = _('Invalid payload.')
-        raise exceptions.AuthenticationFailed(msg)
+        raise exceptions.AuthenticationFailed('Invalid payload.')
 
     try:
         user = User.objects.get_by_natural_key(username)
     except User.DoesNotExist:
-        msg = _('Invalid signature.')
-        raise exceptions.AuthenticationFailed(msg)
+        raise exceptions.AuthenticationFailed('Invalid signature.')
 
-    if not user.is_active:
-        msg = _('User account is disabled.')
-        raise exceptions.AuthenticationFailed(msg)
+    if not user.is_active or not user.enabled:
+        raise exceptions.AuthenticationFailed('User account is disabled.')

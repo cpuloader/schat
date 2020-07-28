@@ -26,7 +26,7 @@ export class CookieTools {
     setAuthorization(token: string) {
       let expireDate = new Date();
       expireDate.setHours(expireDate.getHours() + 1);  // set cookies for 1 hour - test
-      this.cookieService.set('Authorization', `Bearer ${token}`, expireDate);//, '/',
+      this.cookieService.set('Authorization', token, expireDate);//, '/',
                              //this.config.getHost(), false, 'Lax');
     }
 }

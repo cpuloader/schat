@@ -161,8 +161,6 @@ WEBPACK_LOADER = {
     }
 }
 
-USE_WEBSOCKET = True
 PUB_ENDPOINT = 'http://127.0.0.1:8080/pub'
-FOOSTRING = 'foo'
 
 print('this is dev settings!')

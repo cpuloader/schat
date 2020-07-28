@@ -17,10 +17,10 @@ export class JwtInterceptor implements HttpInterceptor {
                 //if (event instanceof HttpResponse) {}
             }, (err: any) => {
                 if (err instanceof HttpErrorResponse) {
-                    if (err.status === 401) {
+                    if (err.status === 401 || err.status === 403) {
                         this.authService.logout();
                         this.usersService.cleanAll();
-                        console.log('token expired');
+                        console.log('JwtInterceptor: unauthorized');
                     }
                 }
             })

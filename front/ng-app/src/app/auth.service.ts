@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { contentHeaders } from './headers';
 import { User } from './json-objects';
 import { ConfigService } from './config';
 import { CookieTools } from './cookie-tools.service';
@@ -19,7 +18,6 @@ export class AuthService {
     constructor(private httpClient: HttpClient,
                 private router: Router,
                 private config: ConfigService,
-                //private jwtHelper: JwtHelperService,
                 private cookieTools: CookieTools) {
 
         this.apiUrl = this.config.getApiUrl();
@@ -46,7 +44,6 @@ export class AuthService {
     public login(email: string, password: string): Observable<any> {
         const url = `${this.apiUrl}/auth/login/`
         return this.httpClient.post(url, {
-            //headers: contentHeaders,
             email: email.toLowerCase(),
             password: password
         }).pipe(
@@ -86,7 +83,6 @@ export class AuthService {
 
     public getMe(): Observable<User> {
         const url = `${this.apiUrl}/accounts/${this.normal_userLogged.id}/`
-        console.log('get me', url);
         return this.httpClient.get<User>(url);
     }
 
@@ -99,9 +95,7 @@ export class AuthService {
     }
 
     public logout(): void {
-        localStorage.removeItem('id_token');
-        localStorage.removeItem('loggedUser');
-        localStorage.removeItem('secretKeys');
+        localStorage.clear();
         this.cookieTools.deleteWindowCookie();
         this.normal_userLogged = null;
         this._userLogged$.next(null);
