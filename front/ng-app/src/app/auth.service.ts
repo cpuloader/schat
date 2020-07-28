@@ -96,7 +96,7 @@ export class AuthService {
 
     public logout(): void {
         localStorage.clear();
-        this.cookieTools.deleteWindowCookie();
+        this.cookieTools.cleanAll();
         this.normal_userLogged = null;
         this._userLogged$.next(null);
         this.router.navigate(['login']);

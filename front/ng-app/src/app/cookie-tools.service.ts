@@ -29,4 +29,9 @@ export class CookieTools {
       this.cookieService.set('Authorization', token, expireDate);//, '/',
                              //this.config.getHost(), false, 'Lax');
     }
+
+    cleanAll() {
+      this.cookieService.delete('lastwindowfocus');
+      this.cookieService.delete('Authorization');
+    }
 }
