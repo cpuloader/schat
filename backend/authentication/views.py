@@ -1,17 +1,19 @@
 import hashlib, random
+import urllib, jwt
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, get_user_model
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.core.mail import send_mail
-from rest_framework import permissions, viewsets, status
+from rest_framework import permissions, viewsets, status, exceptions
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication, get_authorization_header
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
+from rest_framework_jwt.utils import jwt_decode_handler
 
 from django.conf import settings
 from authentication.models import Account, AvatarImage
@@ -119,8 +121,45 @@ class CookieJSONWebTokenAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         cookie = request.COOKIES.get('Authorization')
-        print('!!!! CookieJSONWebTokenAPIView called', cookie)
+        #print('!!!! CookieJSONWebTokenAPIView called', cookie)
         if cookie:
-            return Response({}, status=status.HTTP_200_OK)
+            splitted = urllib.parse.unquote(cookie).split()
+            if len(splitted) == 2 and authenticate_token(splitted[1]):
+                return Response({}, status=status.HTTP_200_OK)
 
         return Response({}, status=status.HTTP_403_FORBIDDEN)
+
+
+def authenticate_token(token):
+    try:
+        decoded = jwt_decode_handler(token)
+    except jwt.ExpiredSignature:
+        msg = _('Signature has expired.')
+        raise exceptions.AuthenticationFailed(msg)
+    except jwt.DecodeError:
+        msg = _('Error decoding signature.')
+        raise exceptions.AuthenticationFailed(msg)
+    except jwt.InvalidTokenError:
+        raise exceptions.AuthenticationFailed()
+    #print('decoded', decoded)
+    username = decoded['email']
+    authenticate_token_credentials(username)
+
+    return True
+
+def authenticate_token_credentials(username):
+    User = get_user_model()
+
+    if not username:
+        msg = _('Invalid payload.')
+        raise exceptions.AuthenticationFailed(msg)
+
+    try:
+        user = User.objects.get_by_natural_key(username)
+    except User.DoesNotExist:
+        msg = _('Invalid signature.')
+        raise exceptions.AuthenticationFailed(msg)
+
+    if not user.is_active:
+        msg = _('User account is disabled.')
+        raise exceptions.AuthenticationFailed(msg)
