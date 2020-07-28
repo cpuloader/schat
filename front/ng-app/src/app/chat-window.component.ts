@@ -137,6 +137,7 @@ export class ChatWindowComponent {
         this.chatLoaded = false;
         this.roomMessagesForPageGetter = this.usersService.getRoomMessages(currentRoom.id, null, null, page + 1)
             .subscribe(nextMsgs => {
+                nextMsgs = this.cryptoService.decryptMessages(nextMsgs, currentRoom.label);
                 this.messages.splice(0, 0, ...nextMsgs.slice(0, nextMsgs.length - added));
                 if (currentRoom.messages.length <= messages.length) this.hasOlderMessages = false;
                 this.chatLoaded = true;
