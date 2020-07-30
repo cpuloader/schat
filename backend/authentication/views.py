@@ -1,18 +1,11 @@
 import hashlib, random
-import urllib, jwt
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth import update_session_auth_hash, get_user_model
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.core.mail import send_mail
+import jwt
+from django.contrib.auth import get_user_model
 from rest_framework import permissions, viewsets, status, exceptions
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication, get_authorization_header
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 from rest_framework_jwt.utils import jwt_decode_handler
 
 from django.conf import settings
@@ -24,7 +17,7 @@ from mymiddleware.activeuser_middleware import get_user_jwt
 
 
 class AuthRegister(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    authentication_classes = ()#CsrfExemptSessionAuthentication, BasicAuthentication)
     serializer_class = AccountSerializer
     permission_classes = (permissions.AllowAny,)
 
@@ -63,15 +56,17 @@ class AccountViewSet(viewsets.ModelViewSet):
             'detail': 'Account could not be created with received data.'
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):      # deactivating instead of deleting
+    def destroy(self, request, *args, **kwargs):      # real delete
         acc = Account.objects.get(pk=request.user.pk)
-        acc.enabled = False
-        acc.save()
+        acc.delete()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        #acc.enabled = False # deactivating
+        #acc.save()
         #update_session_auth_hash(request, acc)  #no need because we dont use sessions here
-        return Response({
-            'status': 'Deactivated',
-            'detail': 'User deactivated.'
-        }, status=status.HTTP_204_NO_CONTENT)
+        #return Response({
+        #    'status': 'Deactivated',
+        #    'detail': 'User deactivated.'
+        #}, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         if self.request.GET.get('search'):
@@ -100,16 +95,12 @@ class AvatarViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return (permissions.AllowAny(),)
-        #print(self.request.data)
         return (permissions.IsAuthenticated(), IsAuthorOfAvatar(),)
 
     def perform_create(self, serializer):
         parent = Account.objects.get(pk=self.request.user.id)
         if hasattr(parent, 'avatarimage'):
-            #old_ava = parent.avatarimage.get()
-            #old_ava.delete()
             parent.avatarimage.delete()
-            #print('old avatar deleted!')
         serializer.save(author=self.request.user)
 
 
@@ -119,7 +110,6 @@ class CookieJSONWebTokenAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         cookie = request.COOKIES.get('Authorization')
-        #print('!!!! CookieJSONWebTokenAPIView called', cookie)
         if authenticate_token(cookie):
             return Response({}, status=status.HTTP_200_OK)
 

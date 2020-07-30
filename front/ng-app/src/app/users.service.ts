@@ -114,6 +114,15 @@ export class UsersService {
             );
     }
 
+    deleteRoom(user: User): Observable<any> {
+        const url = `${this.apiUrl}/rooms/0/?delete=${user.email}`;
+        console.log('delete room with', user.email);
+        return this.httpClient
+            .delete(url).pipe(
+                catchError(this.handleError)
+            );
+    }
+
     sendMessage(message: Message, roomLabel: string): Observable<Message> {
         const url = `${this.apiUrl}/messages/`
         let messageCopy = JSON.parse(JSON.stringify(message));

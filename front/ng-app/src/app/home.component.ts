@@ -54,10 +54,8 @@ export class HomeComponent {
     }
 
     getImage(user: User): string {
-        if (user.avatarimage) {
-            return `url(${user.avatarimage.picture_for_profile})`
-        }
-        return `url(${this.defaultProfilePic_prof})`;
+        return user.avatarimage ? `url(${user.avatarimage.picture_for_profile})` :
+                                  `url(${this.defaultProfilePic_prof})`;
     }
 
     @HostListener('window:resize', [])
@@ -131,6 +129,13 @@ export class HomeComponent {
             }
 
         }
+    }
+
+    deleteChat() {
+        console.log('delete chat with', this.selectedUser);
+        this.usersService.deleteRoom(this.selectedUser).subscribe(
+            res => { console.log('room deleted!'); }
+        );
     }
 
     onGetFreshUserSuccess(freshUser: User) {
