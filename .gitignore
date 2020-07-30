@@ -12,5 +12,6 @@ backend/*/migrations/*
 !backend/*/migrations/__init__.py
 
 front/ng-app/node_modules/
+front/ng-app/npm-debug.log
 
 notes/
