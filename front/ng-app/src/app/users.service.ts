@@ -116,7 +116,6 @@ export class UsersService {
 
     deleteRoom(user: User): Observable<any> {
         const url = `${this.apiUrl}/rooms/0/?delete=${user.email}`;
-        console.log('delete room with', user.email);
         return this.httpClient
             .delete(url).pipe(
                 catchError(this.handleError)
@@ -442,4 +441,16 @@ export class UsersService {
         }
     }
 
+    cleanAfterRoomDelete(userId: Number, result: any) {
+        let label = (result.lenth) ? result[0].label : null;
+        this.currentRoom = null;
+        this.cryptoService.deleteKey(label);
+        const index = this.users.findIndex(function(u) { return (u.id === userId); });
+        if (index > -1) {
+            this.users.splice(index, 1);
+            this._usersUpdated$.next(this.users);
+        }
+        // TODO: here should clean all msgs from deleted chat
+        // ...
+    }
 }

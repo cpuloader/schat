@@ -14,7 +14,7 @@ export class WebSocketService {
     private ws: WebSocket;
     private checkLoop: any;
     private url: string;
-    private roomName: number;
+    private userId: number;
     private chatUrl: string;
     private shouldReconnect: boolean = true;
     private reconnectAttempts: number = 0;
@@ -32,10 +32,9 @@ export class WebSocketService {
         return this._socketState$.asObservable();
     }
 
-    openRoom(roomName: number) {
-        this.url = `${this.chatUrl}/${roomName}`;
-        this.roomName = roomName;
-        //console.log('opening room', this.roomName);
+    openWS(userId: number) {
+        this.url = `${this.chatUrl}/${userId}`;
+        this.userId = userId;
         this.messages = null;
         this.messages = <Subject<Message>>this.connect(this.url).pipe(
                 map((response: MessageEvent): Message => {
@@ -45,7 +44,7 @@ export class WebSocketService {
             );
     }
 
-    closeRoom(reallyClose: boolean) {
+    closeWS(reallyClose: boolean) {
         if (this.ws && reallyClose) {
             this.shouldReconnect = false;
             console.log('closing socket');
@@ -105,7 +104,7 @@ export class WebSocketService {
         if (!this.ws || this.ws.readyState == 3 && this.url && this.shouldReconnect) {
             this._socketState$.next('disconnect');  // signal to unsubscribe in component
             this.reconnectAttempts++;
-            this.openRoom(this.roomName);
+            this.openWS(this.userId);
         }
     }
 

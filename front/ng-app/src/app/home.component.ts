@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
-import { MatSidenav } from '@angular/material';
+import { Component, OnInit, ViewChild, HostListener, ViewContainerRef } from '@angular/core';
+import { MatSidenav, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material';
 import { Subscription } from 'rxjs';
 import { User, Room, Message } from './json-objects';
 import { UsersService } from './users.service';
@@ -9,6 +9,7 @@ import { ConfigService } from './config';
 import { WindowRef } from './window';
 import { CookieTools } from './cookie-tools.service';
 import { PushService } from './push.service';
+import { DialogConfirmComponent } from './dialog-confirm.component';
 
 @Component({
     selector: 'home',
@@ -30,6 +31,7 @@ export class HomeComponent {
     resizeCooldown: boolean = true;
     keyStatus: string = '';
     sidenavMode: string = 'side';
+    dialog: MatDialogRef<any>;
 
     @ViewChild('sidenav', { static: false }) sidenav: MatSidenav;
 
@@ -46,7 +48,9 @@ export class HomeComponent {
                 private config: ConfigService,
                 private authService: AuthService,
                 private cookieTools: CookieTools,
-                private pushService: PushService
+                private pushService: PushService,
+                private vcr: ViewContainerRef,
+                private mdDialog: MatDialog
                 ) {
 
         this.defaultProfilePic = this.config.defaultProfilePicture;
@@ -131,11 +135,34 @@ export class HomeComponent {
         }
     }
 
-    deleteChat() {
-        console.log('delete chat with', this.selectedUser);
-        this.usersService.deleteRoom(this.selectedUser).subscribe(
-            res => { console.log('room deleted!'); }
-        );
+    deleteRoom() {
+        let userId = this.selectedUser.id;
+        this.openConfirmDialog(`Delete chat with ${this.selectedUser.username}?`)
+            .then(confirmed => {
+                if (!confirmed) return;
+                this.usersService.deleteRoom(this.selectedUser).subscribe(
+                    res => {
+                        if (res && res.deleted) {
+                            this.selectedUser = null;
+                            this.usersService.cleanAfterRoomDelete(userId, res.deleted);
+                            this.sidenav.close();
+                        }
+                    }
+                );
+            });
+    }
+
+    openConfirmDialog(dialogText: string): Promise<any> {
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.viewContainerRef = this.vcr;
+        this.dialog = this.mdDialog.open(DialogConfirmComponent, dialogConfig);
+        this.dialog.componentInstance.dialogText = dialogText;
+        return new Promise((resolve, reject) => {
+            this.dialog.afterClosed().subscribe(result => {
+                this.dialog = null;
+                resolve(result);
+            });
+        });
     }
 
     onGetFreshUserSuccess(freshUser: User) {
@@ -151,7 +178,7 @@ export class HomeComponent {
                 this.users = users;     // get updated users with new messages
             });
         this.usersService.getAllUsers();                    // get all users to grid and info for new messages indicators
-        this.webSocketService.openRoom(this.loggedUser.id);    // start websocket session
+        this.webSocketService.openWS(this.loggedUser.id);    // start websocket session
         this.webSocketStateSub = this.webSocketService.socketState$.subscribe(
             res => {
                 if (res === 'connect') {
@@ -161,8 +188,6 @@ export class HomeComponent {
                     this.connectionColor = 'Orange';
                 } else if (res === 'disconnect' && this.msgSubscription) {
                     this.connectionColor = 'OrangeRed';
-                    //this.msgSubscription.unsubscribe();  // unsubscribe from messages
-                    //this.msgSubscription = null;
                 }
             });
         this.flagsSubscription = this.usersService.flagsUpdate$.subscribe(
@@ -202,7 +227,7 @@ export class HomeComponent {
     }
 
     ngOnDestroy() {
-        this.webSocketService.closeRoom(true);
+        this.webSocketService.closeWS(true);
         if (this.usersSubscription) this.usersSubscription.unsubscribe();
         if (this.webSocketStateSub) this.webSocketStateSub.unsubscribe();
         if (this.userLoggedSub) this.userLoggedSub.unsubscribe();

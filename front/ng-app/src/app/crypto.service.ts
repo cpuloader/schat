@@ -67,6 +67,14 @@ export class CryptoService {
         localStorage.setItem('secretKeys', JSON.stringify(keys));
     }
 
+    deleteKey(roomLabel: string): void {
+        let keys = localStorage.getItem('secretKeys');
+        if (!keys) return null;
+        else keys = JSON.parse(keys);
+        delete keys[roomLabel];
+        localStorage.setItem('secretKeys', JSON.stringify(keys));
+    }
+
     decryptMessage(message: Message, roomLabel: string): Message {
         let key = this.getKey(roomLabel);
         if (!key) return message;

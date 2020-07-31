@@ -50,7 +50,7 @@ export class AuthService {
         map(res => {
             localStorage.setItem('id_token', res['token']);
             const decodedJwt = jwtHelper.decodeToken(res['token']);
-            console.log('decodedJwt', decodedJwt);
+            //console.log('decodedJwt', decodedJwt);
             if (decodedJwt) {
                 this.normal_userLogged = <User>({
                     id: decodedJwt.user_id,

@@ -132,9 +132,15 @@ class RoomsViewSet(viewsets.ModelViewSet):
             instances = list(Room.objects.annotate(members_count=Count('members')) \
                           .filter(members_count=2).filter(members__email=user1_email) \
                           .filter(members__email=user2_email))
+            deleted = []
             for instance in instances:
+                deleted.append({
+                    'id': instance.id,
+                    'label': instance.label
+                })
                 instance.delete()
-            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+            return Response({'deleted': deleted}, status=status.HTTP_200_OK)
         return Response({
             'status': 'Error',
             'detail': 'No room param.'
