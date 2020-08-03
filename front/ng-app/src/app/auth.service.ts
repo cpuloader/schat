@@ -87,7 +87,7 @@ export class AuthService {
 
     unauthenticate(): void {
         this.normal_userLogged = undefined;
-        localStorage.remove('loggedUser');
+        localStorage.clear();
     }
 
     public afterLogout(res: any): any {

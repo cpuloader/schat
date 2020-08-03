@@ -76,7 +76,7 @@ export class WebSocketService {
         };
         this.ws.onerror   = (err) => {
             console.log('error: ws status', this.ws.readyState, err);
-            //setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts)); // temporary
+            setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts)); // temporary
         };
         let observable = Observable.create(
             (obs: Observer<MessageEvent>) => {
