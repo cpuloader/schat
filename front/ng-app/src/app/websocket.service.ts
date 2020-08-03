@@ -7,6 +7,7 @@ import { ConfigService } from './config';
 import { WindowRef } from './window';
 import { parseMessage } from './parsers';
 import { CookieTools } from './cookie-tools.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class WebSocketService {
@@ -21,6 +22,7 @@ export class WebSocketService {
 
     constructor(private windowRef: WindowRef,
                 private config: ConfigService,
+                private authService: AuthService,
                 private cookieTools: CookieTools) {
         this.chatUrl = this.config.getChatUrl();
     }
@@ -58,16 +60,15 @@ export class WebSocketService {
         if (this.ws) {
             this.ws.close();
         }
-        const token = localStorage.getItem('loggedUser');
-        if (!token) {
+        if (!this.authService.authenticated()) {
             this.shouldReconnect = false;
             return;
         }
-        this.subject = this.create(this.url, token);
+        this.subject = this.create(this.url);
         return this.subject;
     }
 
-    private create(url: string, token: string): Subject<MessageEvent> {
+    private create(url: string): Subject<MessageEvent> {
         this.ws = new WebSocket(this.url);
         this.ws.onopen = () => {
             console.log('socket ok');
@@ -76,7 +77,7 @@ export class WebSocketService {
         };
         this.ws.onerror   = (err) => {
             console.log('error: ws status', this.ws.readyState, err);
-            setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts)); // temporary
+            setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts));
         };
         let observable = Observable.create(
             (obs: Observer<MessageEvent>) => {

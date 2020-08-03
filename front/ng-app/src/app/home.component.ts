@@ -207,8 +207,7 @@ export class HomeComponent {
     ngOnInit() {
         this.authService.checkLoggedUser();
         if (!this.authService.getLoggedUser() || !this.authService.authenticated()) {
-            this.authService.logout();
-            this.usersService.cleanAll();
+            this.authService.logout().subscribe(() => this.usersService.cleanAll() );
         } else {
             this.userLoggedSub = this.authService.getMe().subscribe(
                 res => {
@@ -218,8 +217,7 @@ export class HomeComponent {
                 },
                 (error: any) => {
                     //console.log('user error:', error);
-                    this.authService.logout();
-                    this.usersService.cleanAll();
+                    this.authService.logout().subscribe(() => this.usersService.cleanAll() );
                 }
             );
         }

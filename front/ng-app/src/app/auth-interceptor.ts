@@ -18,8 +18,7 @@ export class AuthInterceptor implements HttpInterceptor {
             }, (err: any) => {
                 if (err instanceof HttpErrorResponse) {
                     if (err.status === 401) {
-                        this.authService.logout();
-                        this.usersService.cleanAll();
+                        this.authService.logout().subscribe(() => this.usersService.cleanAll() );
                         console.log('AuthInterceptor: unauthorized');
                     }
                 }

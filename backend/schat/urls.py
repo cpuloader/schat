@@ -37,7 +37,7 @@ urlpatterns = [
                 content_type='application/javascript', ), name='ngsw-worker.js'),
     url(r'^ngsw.json', TemplateView.as_view(template_name="ngsw.json", 
                 content_type='application/json', ), name='ngsw.json'),
-    url(r'^admin/', admin.site.urls),
+    #url(r'^admin/', admin.site.urls),
 ]
 
 if settings.DEBUGMEDIA:

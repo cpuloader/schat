@@ -34,8 +34,7 @@ export class ToolbarComponent {
     }
 
     logout() {
-        this.authService.logout();
-        this.usersService.cleanAll();
+        this.authService.logout().subscribe(() => this.usersService.cleanAll() );
     }
 
     search() {

@@ -2,14 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { map, catchError } from 'rxjs/operators';
 import { User } from './json-objects';
 import { ConfigService } from './config';
 import { CookieTools } from './cookie-tools.service';
 import { HeadersService } from './headers.service';
 
-const jwtHelper = new JwtHelperService();
 
 @Injectable()
 export class AuthService {
@@ -49,30 +47,31 @@ export class AuthService {
             email: email.toLowerCase(),
             password: password
         }, { headers: this.headers.makeCSRFHeader() }).pipe(
-        map(user => {
-                localStorage.setItem('loggedUser', JSON.stringify(user));
-                this.normal_userLogged = user;
-                this.router.navigate(['home']);
-            },
-            (error: any) => error
-        ));
-    }
-
-    public signup(user: User): Observable<any> {
-        const url = `${this.apiUrl}/register`
-        return this.httpClient.post(url, user, { headers: this.headers.makeCSRFHeader() }).pipe(
-            map(res => {
-                this.router.navigate(['login']);
+            map(user => {
+                    localStorage.setItem('loggedUser', JSON.stringify(user));
+                    this.normal_userLogged = user;
+                    this.router.navigate(['home']);
                 },
                 (error: any) => error
             ));
     }
 
+    public signup(user: User): Observable<any> {
+        const url = `${this.apiUrl}/register`
+        return this.httpClient.post(url, user, { headers: this.headers.makeCSRFHeader() })
+          .pipe(
+              map(res => this.router.navigate(['login']) )
+          );
+    }
+
     logout(): Observable<any> {
         const url: string = `${this.apiUrl}/auth/logout/`;
-        this.unauthenticate();
         return this.httpClient.post(url, {}, { headers: this.headers.makeCSRFHeader() })
-          .pipe((res) => this.afterLogout(res));
+          .pipe(
+              map(res => this.afterLogout(res) )
+          ).pipe(
+              catchError(err => this.afterLogout(err) ) // clean all in any case
+          );
     }
 
     public getMe(): Observable<User> {
@@ -81,7 +80,6 @@ export class AuthService {
     }
 
     public authenticated(): boolean {
-        //return !jwtHelper.isTokenExpired(localStorage.getItem('id_token'));
         return !!localStorage.getItem('loggedUser');
     }
 
