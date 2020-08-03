@@ -6,7 +6,7 @@ import { Observable, pipe } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Injectable()
-export class JwtInterceptor implements HttpInterceptor {
+export class AuthInterceptor implements HttpInterceptor {
 
     constructor(public authService: AuthService, public usersService: UsersService) {}
 
@@ -20,7 +20,7 @@ export class JwtInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         this.authService.logout();
                         this.usersService.cleanAll();
-                        console.log('JwtInterceptor: unauthorized');
+                        console.log('AuthInterceptor: unauthorized');
                     }
                 }
             })

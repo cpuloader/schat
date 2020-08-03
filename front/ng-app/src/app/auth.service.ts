@@ -7,6 +7,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { User } from './json-objects';
 import { ConfigService } from './config';
 import { CookieTools } from './cookie-tools.service';
+import { HeadersService } from './headers.service';
 
 const jwtHelper = new JwtHelperService();
 
@@ -18,6 +19,7 @@ export class AuthService {
     constructor(private httpClient: HttpClient,
                 private router: Router,
                 private config: ConfigService,
+                private headers: HeadersService,
                 private cookieTools: CookieTools) {
 
         this.apiUrl = this.config.getApiUrl();
@@ -42,30 +44,15 @@ export class AuthService {
     }
 
     public login(email: string, password: string): Observable<any> {
-        const url = `${this.apiUrl}/auth/login/`
-        return this.httpClient.post(url, {
+        const url: string = `${this.apiUrl}/auth/login/`
+        return this.httpClient.post<User>(url, {
             email: email.toLowerCase(),
             password: password
-        }).pipe(
-        map(res => {
-            localStorage.setItem('id_token', res['token']);
-            const decodedJwt = jwtHelper.decodeToken(res['token']);
-            //console.log('decodedJwt', decodedJwt);
-            if (decodedJwt) {
-                this.normal_userLogged = <User>({
-                    id: decodedJwt.user_id,
-                    email: decodedJwt.user_id,
-                    username: decodedJwt.username
-                });
-                this.getMe()   // get user details from server immediately
-                    .subscribe(user => {
-                        localStorage.setItem('loggedUser', JSON.stringify(user));
-                        this.normal_userLogged = user;
-                        this.router.navigate(['home']);
-                        },
-                        err => { console.log(err); }
-                    );
-                }
+        }, { headers: this.headers.makeCSRFHeader() }).pipe(
+        map(user => {
+                localStorage.setItem('loggedUser', JSON.stringify(user));
+                this.normal_userLogged = user;
+                this.router.navigate(['home']);
             },
             (error: any) => error
         ));
@@ -73,12 +60,19 @@ export class AuthService {
 
     public signup(user: User): Observable<any> {
         const url = `${this.apiUrl}/register`
-        return this.httpClient.post(url, user).pipe(
+        return this.httpClient.post(url, user, { headers: this.headers.makeCSRFHeader() }).pipe(
             map(res => {
                 this.router.navigate(['login']);
                 },
                 (error: any) => error
             ));
+    }
+
+    logout(): Observable<any> {
+        const url: string = `${this.apiUrl}/auth/logout/`;
+        this.unauthenticate();
+        return this.httpClient.post(url, {}, { headers: this.headers.makeCSRFHeader() })
+          .pipe((res) => this.afterLogout(res));
     }
 
     public getMe(): Observable<User> {
@@ -87,18 +81,21 @@ export class AuthService {
     }
 
     public authenticated(): boolean {
-        return !jwtHelper.isTokenExpired(localStorage.getItem('id_token'));
+        //return !jwtHelper.isTokenExpired(localStorage.getItem('id_token'));
+        return !!localStorage.getItem('loggedUser');
     }
 
-    public getToken(): string {
-        return localStorage.getItem('id_token');
+    unauthenticate(): void {
+        this.normal_userLogged = undefined;
+        localStorage.remove('loggedUser');
     }
 
-    public logout(): void {
+    public afterLogout(res: any): any {
         localStorage.clear();
         this.cookieTools.cleanAll();
         this.normal_userLogged = null;
         this._userLogged$.next(null);
         this.router.navigate(['login']);
+        return res;
     }
 }

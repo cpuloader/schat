@@ -12,8 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CookieService } from 'ngx-cookie-service';
 
 import { AuthService } from './auth.service';
-import { TokenInterceptor } from './token-interceptor';
-import { JwtInterceptor } from './jwt-interceptor';
+import { AuthInterceptor } from './auth-interceptor';
 import { AppRoutingModule }    from './app.routes';
 import { AuthGuard } from './auth-guard';
 import { AppComponent } from './app.component';
@@ -35,6 +34,7 @@ import { SearchUserComponent } from './search-user.component';
 import { DialogConfirmComponent } from './dialog-confirm.component';
 import { CookieTools } from './cookie-tools.service';
 import { ConfigService } from './config';
+import { HeadersService } from './headers.service';
 import { LinkParserDirective } from './links.directive';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -84,6 +84,7 @@ import { PushService } from './push.service';
         CookieService,
         AuthGuard,
         AuthService,
+        HeadersService,
         UsersService,
         WebSocketService,
         WindowRef,
@@ -91,12 +92,7 @@ import { PushService } from './push.service';
         CookieTools,
         {
             provide: HTTP_INTERCEPTORS,
-            useClass: TokenInterceptor,
-            multi: true
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: JwtInterceptor,
+            useClass: AuthInterceptor,
             multi: true
         },
         PushService

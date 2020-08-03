@@ -58,12 +58,11 @@ export class WebSocketService {
         if (this.ws) {
             this.ws.close();
         }
-        const token = localStorage.getItem('id_token');
+        const token = localStorage.getItem('loggedUser');
         if (!token) {
             this.shouldReconnect = false;
             return;
         }
-        this.cookieTools.setAuthorization(token);
         this.subject = this.create(this.url, token);
         return this.subject;
     }
@@ -77,7 +76,7 @@ export class WebSocketService {
         };
         this.ws.onerror   = (err) => {
             console.log('error: ws status', this.ws.readyState, err);
-            setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts));
+            //setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts)); // temporary
         };
         let observable = Observable.create(
             (obs: Observer<MessageEvent>) => {

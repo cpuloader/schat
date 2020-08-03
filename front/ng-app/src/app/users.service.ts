@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest, HttpEvent } from '@angular/common/http';
 import { Observable, Subject, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { contentHeaders } from './headers';
 import { Avatar, User, Room, Message } from './json-objects';
 import { parseMessage } from './parsers';
 import { ConfigService } from './config';
 import { CryptoService } from './crypto.service';
 import { CookieTools } from './cookie-tools.service';
 import { AuthService } from './auth.service';
-
+import { HeadersService } from './headers.service';
 
 @Injectable()
 export class UsersService {
@@ -25,7 +24,8 @@ export class UsersService {
                 private config: ConfigService,
                 private authService: AuthService,
                 private cryptoService: CryptoService,
-                private cookieTools: CookieTools) {
+                private cookieTools: CookieTools,
+                private headers: HeadersService) {
 
         this.chatUrl = this.config.getChatUrl();
         this.apiUrl = this.config.getApiUrl();
@@ -83,7 +83,7 @@ export class UsersService {
         delete proxyUser.picture;                // we save picture in another way
         delete proxyUser.picture_mini;
         return this.httpClient
-            .put(url, proxyUser).pipe(
+            .put(url, proxyUser, { headers: this.headers.makeCSRFHeader() }).pipe(
                 catchError(this.handleError)
             );
     }
@@ -100,7 +100,7 @@ export class UsersService {
     createRoom(room: Room): Observable<Room> {
         const url = `${this.apiUrl}/rooms/`;
         return this.httpClient
-            .post<Room>(url, room).pipe(
+            .post<Room>(url, room, { headers: this.headers.makeCSRFHeader() }).pipe(
                 catchError(this.handleError)
             );
     }
@@ -117,7 +117,7 @@ export class UsersService {
     deleteRoom(user: User): Observable<any> {
         const url = `${this.apiUrl}/rooms/0/?delete=${user.email}`;
         return this.httpClient
-            .delete(url).pipe(
+            .delete(url, { headers: this.headers.makeCSRFHeader() }).pipe(
                 catchError(this.handleError)
             );
     }
@@ -127,7 +127,7 @@ export class UsersService {
         let messageCopy = JSON.parse(JSON.stringify(message));
         messageCopy = this.cryptoService.encrypt(messageCopy, roomLabel); // make it secret!!!
         return this.httpClient
-            .post<Message>(url, messageCopy).pipe(
+            .post<Message>(url, messageCopy, { headers: this.headers.makeCSRFHeader() }).pipe(
                 map(res => parseMessage(res))
             ).pipe(
                 catchError(this.handleError)
@@ -139,7 +139,7 @@ export class UsersService {
         let messageCopy = JSON.parse(JSON.stringify(message));
         delete messageCopy.message; // we don't want to send decrypted text
         return this.httpClient
-            .put<Message>(url, messageCopy).pipe(
+            .put<Message>(url, messageCopy, { headers: this.headers.makeCSRFHeader() }).pipe(
                 map(res => parseMessage(res))
             ).pipe(
                 catchError(this.handleError)
@@ -149,7 +149,7 @@ export class UsersService {
     deleteMessage(message: Message): Observable<Object> {
         const url = `${this.apiUrl}/messages/${message.id}/`;
         return this.httpClient
-            .delete(url, { observe: 'body' }).pipe(
+            .delete(url, { observe: 'body',  headers: this.headers.makeCSRFHeader() }).pipe(
                 catchError(this.handleError)
             );
     }
@@ -187,7 +187,7 @@ export class UsersService {
         let formData: FormData = new FormData();
         formData.append("picture", file, file.name);
         const req = new HttpRequest('POST', url, formData, {
-            reportProgress: true,
+            reportProgress: true, headers: this.headers.makeCSRFHeader()
         });
         return this.httpClient.request(req);
     }

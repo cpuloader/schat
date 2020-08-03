@@ -1,19 +1,18 @@
 import hashlib, random
 import jwt
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.middleware import get_user
 from rest_framework import permissions, viewsets, status, exceptions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authentication import BasicAuthentication, get_authorization_header
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework_jwt.utils import jwt_decode_handler
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication, get_authorization_header
 
 from django.conf import settings
 from authentication.models import Account, AvatarImage
 from authentication.permissions import IsAccountOwner, IsAuthorOfAvatar
 from authentication.serializers import AccountSerializer, AvatarImageSerializer
 from schat.auth_classes import CsrfExemptSessionAuthentication
-from mymiddleware.activeuser_middleware import get_user_jwt
 
 
 class AuthRegister(APIView):
@@ -31,7 +30,7 @@ class AuthRegister(APIView):
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (SessionAuthentication,)
 
     def paginate_queryset(self, queryset, view=None): # turn off pagination
         return None
@@ -70,7 +69,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         if self.request.GET.get('search'):
-            user = get_user_jwt(self.request)   # username = email here
+            user = get_user(self.request)   # username = email here
             email = self.request.GET.get('search')
             queryset = Account.objects.filter(email=email).exclude(email=user)
             serializer = self.get_serializer(queryset, many=True)
@@ -88,6 +87,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 class AvatarViewSet(viewsets.ModelViewSet):
     queryset = AvatarImage.objects.all()
     serializer_class = AvatarImageSerializer
+    authentication_classes = (SessionAuthentication,)
 
     def paginate_queryset(self, queryset, view=None): # turn off pagination
         return None
@@ -104,34 +104,51 @@ class AvatarViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class CookieJSONWebTokenAPIView(APIView):
+class LoginView(APIView):
+    def post(self, request, format=None):
+        email = request.data.get('email', None)
+        password = request.data.get('password', None)
+        account = authenticate(email=email, password=password)
+
+        if account is not None:
+            if account.enabled:
+                login(request, account)
+                serialized = AccountSerializer(account)
+                return Response(serialized.data)
+            else:
+                return Response({
+                    'status': 'Unauthorized',
+                    'detail': 'This account has been disabled.'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({
+                'status': 'Unauthorized',
+                'detail': 'Username/password combination invalid.'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+class LogoutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, format=None):
+        logout(request)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+class UserSessionVerifyAPIView(APIView):
     permission_classes = ()
-    authentication_classes = ()
+    authentication_classes = (SessionAuthentication,)
 
     def get(self, request, *args, **kwargs):
-        cookie = request.COOKIES.get('Authorization')
-        if authenticate_token(cookie):
+        user = get_user(request)
+
+        if authenticate_user_credentials(user):
             return Response({}, status=status.HTTP_200_OK)
 
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
 
-def authenticate_token(token):
-    try:
-        decoded = jwt_decode_handler(token)
-    except jwt.ExpiredSignature:
-        raise exceptions.AuthenticationFailed('Signature has expired.')
-    except jwt.DecodeError:
-        raise exceptions.AuthenticationFailed('Error decoding signature.')
-    except jwt.InvalidTokenError:
-        raise exceptions.AuthenticationFailed()
-    #print('decoded', decoded)
-    username = decoded['email']
-    authenticate_token_credentials(username)
 
-    return True
-
-def authenticate_token_credentials(username):
+def authenticate_user_credentials(username):
     User = get_user_model()
 
     if not username:
@@ -144,3 +161,5 @@ def authenticate_token_credentials(username):
 
     if not user.is_active or not user.enabled:
         raise exceptions.AuthenticationFailed('User account is disabled.')
+
+    return True
