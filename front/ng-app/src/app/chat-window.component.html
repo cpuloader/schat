@@ -23,6 +23,9 @@
                         <span *ngIf="message.author.username == loggedUser.username && message.sent">
                             <mat-icon class="message-status">done</mat-icon>
                         </span>
+                        <span *ngIf="message.encrypted">
+                            <mat-icon class="message-status">lock</mat-icon>
+                        </span>
                         {{ message.timestamp | dateFieldPipe }}
                     </p>
                     <div class="chat-message-remove" *ngIf="message.author.username == loggedUser.username" (click)="removeMessage(message)">

@@ -204,6 +204,7 @@ export class UsersService {
         this.myUnreadMsgIds = [];
         this.unreadMsgs = [];
         this.resetSubjects();
+        this.cryptoService.deleteAllKeys();
     }
 
     resetSubjects() {

@@ -36,6 +36,9 @@ class AccountViewSet(viewsets.ModelViewSet):
         return None
 
     def get_permissions(self):
+        if self.request.method == 'GET': # user can't get random users, only search by email
+            return (permissions.IsAuthenticated(), IsAccountOwner(),)
+
         if self.request.method in permissions.SAFE_METHODS:
             return (permissions.IsAuthenticated(),)
 
@@ -95,8 +98,10 @@ class AvatarViewSet(viewsets.ModelViewSet):
         return None
 
     def get_permissions(self):
+        if self.request.method == 'GET':
+            return (permissions.IsAuthenticated(), IsAuthorOfAvatar(),)
         if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.AllowAny(),)
+            return (permissions.IsAuthenticated(),)
         return (permissions.IsAuthenticated(), IsAuthorOfAvatar(),)
 
     def perform_create(self, serializer):

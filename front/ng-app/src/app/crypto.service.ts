@@ -5,6 +5,7 @@ import { WindowRef } from './window';
 
 @Injectable()
 export class CryptoService {
+    private roomKeys: any = {};
 
     constructor(private windowRef: WindowRef) {}
 
@@ -35,7 +36,7 @@ export class CryptoService {
             clearText = clearText.toString(enc.Utf8);
             //console.log('decrypted', clearText);
         } catch (err) {
-            console.log('not decrypted, error');
+            //console.log('not decrypted, error');
             message.notdecoded = true;
             return message;
         }
@@ -48,26 +49,45 @@ export class CryptoService {
     }
 
     getKey(roomLabel: string): string {
-        let keys = localStorage.getItem('secretKeys');
-        if (!keys) return null;
-        else keys = JSON.parse(keys);
-        //console.log('keys[roomLabel]', keys[roomLabel]);
-        return keys[roomLabel];
+        //console.log('keys[roomLabel]', this.roomKeys[roomLabel]);
+        return this.roomKeys[roomLabel];
     }
 
     setKey(password: string, roomLabel: string) {
+        //console.log('all keys', this.roomKeys);
+        const hashedPassword = SHA256(password);
+        let plainText = hashedPassword.toString();
+        this.roomKeys[roomLabel] = this.windowRef.nativeWindow.escape(plainText);
+        //console.log('set password', password, 'for room', roomLabel, 'hashed', this.roomKeys[roomLabel]);
+    }
+
+    deleteKey(roomLabel: string): void {
+        delete this.roomKeys[roomLabel];
+    }
+
+    deleteAllKeys(): void {
+        this.roomKeys = {};
+    }
+
+    // storage is bad for keys
+    getKeyFromStorage(roomLabel: string): string {
         let keys = localStorage.getItem('secretKeys');
-        //console.log('all keys', keys);
+        if (!keys) return null;
+        else keys = JSON.parse(keys);
+        return keys[roomLabel];
+    }
+
+    setKeyToStorage(password: string, roomLabel: string) {
+        let keys = localStorage.getItem('secretKeys');
         if (!keys) keys = "{}";
         keys = JSON.parse(keys);
         const hashedPassword = SHA256(password);
         let plainText = hashedPassword.toString();
         keys[roomLabel] = this.windowRef.nativeWindow.escape(plainText);
-        //console.log('set password', password, 'for room', roomLabel, 'hashed', keys[roomLabel]);
         localStorage.setItem('secretKeys', JSON.stringify(keys));
     }
 
-    deleteKey(roomLabel: string): void {
+    deleteKeyInStorage(roomLabel: string): void {
         let keys = localStorage.getItem('secretKeys');
         if (!keys) return null;
         else keys = JSON.parse(keys);
@@ -89,6 +109,4 @@ export class CryptoService {
        }
        return newMessages;
     }
-
-
 }
