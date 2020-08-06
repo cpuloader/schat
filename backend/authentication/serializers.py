@@ -49,6 +49,5 @@ class AccountSerializer(serializers.ModelSerializer):
         if password and confirm_password and password == confirm_password:
             instance.set_password(password)
             instance.save()
-        # we don't use sessions here
-        #update_session_auth_hash(self.context.get('request'), instance)
+        update_session_auth_hash(self.context.get('request'), instance)
         return instance

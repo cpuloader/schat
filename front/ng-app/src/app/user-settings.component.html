@@ -36,5 +36,10 @@
         <br>
         <button mat-raised-button color="primary" [disabled]="!settingsForm.form.valid || !(user.password === user.confirm_password)">Submit</button>
         <button mat-button mat-dialog-close color="primary" class="float-right">Close</button>
+        <div class="user-settings-delete-button">
+            <div class="user-settings-delete-button-inner">
+                <button mat-button color="warn" type="button" (click)="deleteAcc()">Delete Account</button>
+            </div>
+        </div>
     </form>
 </div>

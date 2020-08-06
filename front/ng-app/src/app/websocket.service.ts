@@ -40,7 +40,7 @@ export class WebSocketService {
         this.messages = null;
         this.messages = <Subject<Message>>this.connect(this.url).pipe(
                 map((response: MessageEvent): Message => {
-                    console.log('incoming msg', response.data);
+                    //console.log('incoming msg', response.data);
                     return parseMessage(JSON.parse(response.data));
                 })
             );
@@ -76,7 +76,7 @@ export class WebSocketService {
             this.reconnectAttempts = 0;
         };
         this.ws.onerror   = (err) => {
-            console.log('error: ws status', this.ws.readyState, err);
+            //console.log('error: ws status', this.ws.readyState, err);
             setTimeout(() => this.check(), this.getBackoffDelay(this.reconnectAttempts));
         };
         let observable = Observable.create(
@@ -85,7 +85,7 @@ export class WebSocketService {
                 //this.ws.onerror   = obs.error.bind(obs);
                 this.ws.onclose   = () => {
                     obs.complete.bind(obs);
-                    console.log('ws close', this.ws.readyState);
+                    //console.log('ws close', this.ws.readyState);
                 }
                 return;
         });

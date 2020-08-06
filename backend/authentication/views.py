@@ -55,17 +55,19 @@ class AccountViewSet(viewsets.ModelViewSet):
             'detail': 'Account could not be created with received data.'
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, *args, **kwargs):      # real delete
-        acc = Account.objects.get(pk=request.user.pk)
-        acc.delete()
+    def destroy(self, request, *args, **kwargs):
+        acc_pk = int(self.kwargs['pk'])
+        if request.user.pk == acc_pk:
+            acc = Account.objects.get(pk=acc_pk)
+            acc.delete()
+        else:
+            user = Account.objects.get(pk=request.user.pk)
+            if user.is_admin:
+                acc = Account.objects.get(pk=acc_pk)
+                acc.delete()
+            else:
+                return Response({}, status=status.HTTP_403_FORBIDDEN)
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-        #acc.enabled = False # deactivating
-        #acc.save()
-        #update_session_auth_hash(request, acc)  #no need because we dont use sessions here
-        #return Response({
-        #    'status': 'Deactivated',
-        #    'detail': 'User deactivated.'
-        #}, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         if self.request.GET.get('search'):

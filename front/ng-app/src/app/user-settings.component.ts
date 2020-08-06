@@ -101,6 +101,10 @@ export class UserSettingsComponent implements OnInit {
             });
     }
 
+    deleteAcc() {
+        setTimeout(() => this.mdDialogRef.close("deleteAccount"), 50);
+    }
+
     ngOnInit() {
         this.user = JSON.parse(JSON.stringify(this.loggedUser));  // make copy to not detect changes
     }

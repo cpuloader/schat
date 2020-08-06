@@ -80,12 +80,17 @@ export class UsersService {
     updateUser(user: User): Observable<User> {
         const url = `${this.apiUrl}/accounts/${user.id}/`;
         let proxyUser = JSON.parse(JSON.stringify(user)); //make copy to not change view
-        delete proxyUser.picture;                // we save picture in another way
-        delete proxyUser.picture_mini;
+        delete proxyUser.avatarimage;                // we save picture in another way
         return this.httpClient
             .put(url, proxyUser, { headers: this.headers.makeCSRFHeader() }).pipe(
                 catchError(this.handleError)
             );
+    }
+
+    deleteUser(user: User): Observable<any> {
+        const url = `${this.apiUrl}/accounts/${user.id}/`;
+        return this.httpClient
+            .delete(url, { headers: this.headers.makeCSRFHeader() });
     }
 
     // returns chatroom with logged user and another user

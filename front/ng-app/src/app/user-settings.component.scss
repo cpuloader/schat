@@ -60,3 +60,13 @@ mat-form-field {
     width: 100%;
     height: 10px;
 }
+
+.user-settings-delete-button {
+   display: flex;
+   margin-top: 10px;
+}
+
+.user-settings-delete-button-inner {
+   margin: 0 auto;
+   flex: 0 1;
+}
