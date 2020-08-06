@@ -22,8 +22,10 @@ export class RoomKeyDialogComponent {
     }
 
     setRoomKey(): void {
-        this.cryptoService.setKey(this.roomKey, this.label);
-        this.wasCancelled = false;
+        if (this.roomKey.length) {
+            this.cryptoService.setKey(this.roomKey, this.label);
+            this.wasCancelled = false;
+        }
         this.mdDialogRef.close();
     }
 

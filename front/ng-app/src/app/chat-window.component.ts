@@ -98,7 +98,12 @@ export class ChatWindowComponent {
         this.dialog.componentInstance.label = label;
         this.dialog.afterClosed().subscribe(result => {
             if (message) {
-                this.addMessage(message);  // for new room
+                if (this.cryptoService.getKey(label)) {
+                    message.encrypted = true;
+                    this.addMessage(message);  // for new room
+                } else {
+                    this.openRoomKeyDialog(label);
+                }
             } else {
                 const currentRoom = this.usersService.getCurrentRoom();
                 this.getRoomMessages(currentRoom.id);  // reload all messages for existing room
@@ -154,7 +159,12 @@ export class ChatWindowComponent {
         const currentRoom = this.usersService.getCurrentRoom();
         if (currentRoom) {
             newMessage.room = currentRoom.id; // important
-            this.addMessage(newMessage);
+            if (this.cryptoService.getKey(currentRoom.label)) {
+                newMessage.encrypted = true;
+                this.addMessage(newMessage);
+            } else {
+                this.openRoomKeyDialog(currentRoom.label);
+            }
         } else { // this is first message for not created room
             let newRoom = new Room();
             newRoom.members = [this.loggedUser, this.selectedUser];

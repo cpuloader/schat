@@ -65,6 +65,7 @@ WSGI_APPLICATION = 'schat.wsgi.application'
 
 AUTH_USER_MODEL = 'authentication.Account'
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 365   # seconds, must be equal to user expires in front-end
+SESSION_COOKIE_SECURE = True
 
 USER_ONLINE_TIMEOUT = 300
 USER_LASTSEEN_TIMEOUT = 60 * 60 * 24 * 7
